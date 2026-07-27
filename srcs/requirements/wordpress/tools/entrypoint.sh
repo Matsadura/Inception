@@ -1,14 +1,12 @@
 #!/bin/bash
 set -e
 
-# 1. Define a logging function for clear output
 log() {
     echo -e "\033[0;32m[Inception-WP] $(date +'%H:%M:%S')\033[0m $1"
 }
 
 log "Starting WordPress entrypoint script..."
 
-# 2. Variable Validation (Helpful to debug empty variables)
 if [ -z "$DB_PASSWORD_FILE" ] || [ -z "$WP_ADMIN_PASSWORD_FILE" ]; then
     echo "Error: Password secret files are not defined!"
     exit 1
@@ -19,7 +17,6 @@ DB_PASS=$(cat $DB_PASSWORD_FILE)
 WP_ADMIN_PASS=$(cat $WP_ADMIN_PASSWORD_FILE)
 WP_USER_PASS=$(cat $WP_USER_PASSWORD_FILE)
 
-# 3. Wait for Database (With feedback)
 log "Waiting for MariaDB connection on mariadb:3306..."
 attempt=0
 while ! (echo > /dev/tcp/mariadb/3306) >/dev/null 2>&1; do
@@ -29,11 +26,9 @@ while ! (echo > /dev/tcp/mariadb/3306) >/dev/null 2>&1; do
 done
 log "Success: Connected to MariaDB!"
 
-# 4. WordPress Installation
 if [ ! -f /var/www/wordpress/wp-config.php ]; then
     log "No wp-config.php found. Installing WordPress..."
     
-    # Check permissions before starting
     log "Current directory owner: $(ls -ld /var/www/wordpress | awk '{print $3:$4}')"
     
     cd /var/www/wordpress
@@ -62,9 +57,10 @@ else
     log "wp-config.php already exists. Skipping installation."
 fi
 
-# 5. Final startup
 mkdir -p /run/php
 log "Starting PHP-FPM..."
 
-# Execute the CMD passed from Dockerfile (usually php-fpm -F)
+chown -R www-data:www-data /var/www/wordpress
+chmod -R 775 /var/www/wordpress
+
 exec "$@"
