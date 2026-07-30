@@ -1,14 +1,20 @@
 services:
   nginx:
     container_name: nginx
-    build: ./requirements/nginx/
+    build:
+      context: ./requirements/nginx/
+      args:
+        - NGINX_PORT=${NGINX_PORT}
+        - WORDPRESS_PORT=${WORDPRESS_PORT}
     depends_on:
       - wordpress
     restart: always
     ports:
-      - "443:443"
+      - "${NGINX_PORT}:${NGINX_PORT}"
     environment:
       - DOMAINE_NAME=${DOMAINE_NAME}
+      - NGINX_PORT=${NGINX_PORT}
+      - WORDPRESS_PORT=${WORDPRESS_PORT}
     volumes:
       - wp_data:/var/www/wordpress
     networks:
