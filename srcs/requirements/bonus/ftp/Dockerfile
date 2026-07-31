@@ -6,12 +6,19 @@ RUN apt-get update && apt-get install -y \
 
 RUN mkdir -p /var/run/vsftpd/empty
 
+ARG FTP_PORT
+ENV FTP_PORT=${FTP_PORT}
+ARG FTP_PASV_MIN_PORT
+ENV FTP_PASV_MIN_PORT=${FTP_PASV_MIN_PORT}
+ARG FTP_PASV_MAX_PORT
+ENV FTP_PASV_MAX_PORT=${FTP_PASV_MAX_PORT}
+
 COPY conf/vsftpd.conf /etc/vsftpd.conf
 COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-EXPOSE 21 21000-21010
+EXPOSE ${FTP_PORT} ${FTP_PASV_MIN_PORT}-${FTP_PASV_MAX_PORT}
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
