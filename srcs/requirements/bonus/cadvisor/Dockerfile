@@ -7,6 +7,12 @@ RUN wget https://github.com/google/cadvisor/releases/download/v0.56.2/cadvisor-v
 
 RUN chmod +x /usr/local/bin/cadvisor
 
-EXPOSE 8080
+ARG CADVISOR_PORT
+ENV CADVISOR_PORT=${CADVISOR_PORT}
 
-CMD ["/usr/local/bin/cadvisor", "-logtostderr"]
+COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE ${CADVISOR_PORT}
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

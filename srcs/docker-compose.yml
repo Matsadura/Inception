@@ -140,15 +140,20 @@ services:
 
   cadvisor:
     container_name: cadvisor
-    build: ./requirements/bonus/cadvisor
+    build:
+      context: ./requirements/bonus/cadvisor/
+      args:
+        - CADVISOR_PORT=${CADVISOR_PORT}
     depends_on:
       - nginx
       - mariadb
       - wordpress
       - website
     restart: always
+    environment:
+      - CADVISOR_PORT=${CADVISOR_PORT}
     ports:
-      - "8080:8080"
+      - "${CADVISOR_PORT}:${CADVISOR_PORT}"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
