@@ -1,6 +1,8 @@
 #!/usr/bin/bash
 set -e
 
+sed -i "s/MARIADB_PORT_PLACEHOLDER/${MARIADB_PORT}/g" /etc/mysql/mariadb.conf.d/50-server.cnf
+
 DB_PASS=$(cat $DB_PASSWORD_FILE)
 DB_ROOT_PASS=$(cat $DB_ROOT_PASSWORD_FILE)
 

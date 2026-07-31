@@ -4,12 +4,15 @@ RUN apt-get update && \
     apt-get install -y mariadb-server mariadb-client libmariadb-dev-compat libmariadb-dev && \
     rm -rf /var/lib/apt/lists/*
 
-COPY conf/50-server.conf /etc/mysql/mariadb.conf.d/50-server.conf
+ARG MARIADB_PORT
+ENV MARIADB_PORT=${MARIADB_PORT}
+
+COPY conf/50-server.conf /etc/mysql/mariadb.conf.d/50-server.cnf
 COPY tools/entrypoint.sh /usr/local/bin
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-EXPOSE 3306
+EXPOSE ${MARIADB_PORT}
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
