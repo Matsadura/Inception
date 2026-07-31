@@ -112,10 +112,15 @@ services:
 
   adminer:
     container_name: adminer
-    build: ./requirements/bonus/adminer/
+    build:
+      context: ./requirements/bonus/adminer/
+      args:
+        - ADMINER_PORT=${ADMINER_PORT}
     restart: always
+    environment:
+      - ADMINER_PORT=${ADMINER_PORT}
     ports:
-      - "8081:8081"
+      - "${ADMINER_PORT}:${ADMINER_PORT}"
     networks:
       - inception_network
 

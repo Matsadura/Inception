@@ -12,6 +12,12 @@ WORKDIR /var/www/html
 
 RUN wget https://github.com/vrana/adminer/releases/download/v5.4.1/adminer-5.4.1.php -O index.php
 
-EXPOSE 8081
+COPY tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-CMD ["php", "-S", "0.0.0.0:8081", "-t", "/var/www/html"]
+ARG ADMINER_PORT
+ENV ADMINER_PORT=${ADMINER_PORT}
+
+EXPOSE ${ADMINER_PORT}
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
