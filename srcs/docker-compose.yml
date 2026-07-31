@@ -79,10 +79,15 @@ services:
   
   redis:
     container_name: redis
-    build: ./requirements/bonus/redis/
+    build:
+      context: ./requirements/bonus/redis/
+      args:
+        - REDIS_PORT=${REDIS_PORT}
     restart: always
+    environment:
+      - REDIS_PORT=${REDIS_PORT}
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
     networks:
       - inception_network
   
