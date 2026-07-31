@@ -10,7 +10,7 @@ setup:
 	@sudo chown -R 33:33 $(WP_DATA)
 	@openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout ./srcs/requirements/nginx/tools/ssl.key \
-  -out ./srcs/requirements/nginx/tools/ssl.crt \
+  -out ./srcs/requirements/nginx/tools/ssl.cert \
   -subj "/CN=localhost"
 
 up:
@@ -25,7 +25,7 @@ clean: down
 fclean: clean
 	@sudo rm -rf $(USER_DATA)
 	@docker volume rm $(docker volume ls -q) 2>/dev/null || true
-	@sudo rm -rf ./srcs/requirements/nginx/tools/ssl.crt ./srcs/requirements/nginx/tools/ssl.key
+	@sudo rm -rf ./srcs/requirements/nginx/tools/ssl.cert ./srcs/requirements/nginx/tools/ssl.key
 
 re: fclean all
 
