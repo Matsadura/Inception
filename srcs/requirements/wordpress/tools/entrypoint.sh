@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+sed -i "s/WORDPRESS_PORT_PLACEHOLDER/${WORDPRESS_PORT}/g" /etc/php/8.2/fpm/pool.d/www.conf
+
 log() {
     echo -e "\033[0;32m[Inception-WP] $(date +'%H:%M:%S')\033[0m $1"
 }
@@ -17,9 +19,9 @@ DB_PASS=$(cat $DB_PASSWORD_FILE)
 WP_ADMIN_PASS=$(cat $WP_ADMIN_PASSWORD_FILE)
 WP_USER_PASS=$(cat $WP_USER_PASSWORD_FILE)
 
-log "Waiting for MariaDB connection on mariadb:3306..."
+log "Waiting for MariaDB connection on mariadb:$MARIADB_PORT..."
 attempt=0
-while ! (echo > /dev/tcp/mariadb/3306) >/dev/null 2>&1; do
+while ! (echo > /dev/tcp/mariadb/$MARIADB_PORT) >/dev/null 2>&1; do
     attempt=$((attempt+1))
     echo "  [Retrying...] MariaDB not reachable yet (Attempt $attempt)"
     sleep 2
@@ -37,7 +39,7 @@ if [ ! -f /var/www/wordpress/wp-config.php ]; then
     wp core download --path=/var/www/wordpress --allow-root
 
     log "Creating config file..."
-    wp config create --path=/var/www/wordpress --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_PASS --dbhost=mariadb:3306 --allow-root
+    wp config create --path=/var/www/wordpress --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_PASS --dbhost=mariadb:$MARIADB_PORT --allow-root
 
     log "Installing WordPress site..."
     wp core install --path=/var/www/wordpress --url=$DOMAINE_NAME --title="Inception" --admin_user=$WP_ADMIN --admin_password=$WP_ADMIN_PASS --admin_email=$WP_ADMIN_EMAIL --skip-email --allow-root
@@ -48,7 +50,7 @@ if [ ! -f /var/www/wordpress/wp-config.php ]; then
     log "Setting up redis cache plugin..."
     wp plugin install redis-cache --activate --path=/var/www/wordpress --allow-root
     wp config set WP_REDIS_HOST redis --path=/var/www/wordpress --allow-root
-    wp config set WP_REDIS_PORT 6379 --path=/var/www/wordpress --allow-root
+    wp config set WP_REDIS_PORT $REDIS_PORT --path=/var/www/wordpress --allow-root
     wp redis enable --path=/var/www/wordpress --allow-root
 
     

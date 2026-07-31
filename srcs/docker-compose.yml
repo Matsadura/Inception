@@ -39,7 +39,12 @@ services:
 
   wordpress:
     container_name: wordpress
-    build: ./requirements/wordpress/
+    build:
+      context: ./requirements/wordpress/
+      args:
+        - WORDPRESS_PORT=${WORDPRESS_PORT}
+        - MARIADB_PORT=${MARIADB_PORT}
+        - REDIS_PORT=${REDIS_PORT}
     restart: always
     depends_on:
       - mariadb
@@ -56,6 +61,9 @@ services:
       - WP_ADMIN=${WP_ADMIN}
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
       - WP_ADMIN_PASSWORD_FILE=/run/secrets/wp_admin_password
+      - WORDPRESS_PORT=${WORDPRESS_PORT}
+      - MARIADB_PORT=${MARIADB_PORT}
+      - REDIS_PORT=${REDIS_PORT}
     secrets:
       - db_password
       - wp_user_password

@@ -13,12 +13,19 @@ COPY tools/entrypoint.sh /usr/local/bin
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+ARG WORDPRESS_PORT
+ENV WORDPRESS_PORT=${WORDPRESS_PORT}
+ARG MARIADB_PORT
+ENV MARIADB_PORT=${MARIADB_PORT}
+ARG REDIS_PORT
+ENV REDIS_PORT=${REDIS_PORT}
+
 RUN mkdir -p /var/www/wordpress
 RUN chown -R www-data:www-data /var/www/wordpress
 
 WORKDIR /var/www/wordpress
 
-EXPOSE 9000
+EXPOSE ${WORDPRESS_PORT}
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
