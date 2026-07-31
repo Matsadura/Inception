@@ -116,10 +116,15 @@ services:
 
   website:
     container_name: website
-    build: ./requirements/bonus/website/
+    build:
+      context: ./requirements/bonus/website/
+      args:
+        - WEBSITE_PORT=${WEBSITE_PORT}
     restart: always
+    environment:
+      - WEBSITE_PORT=${WEBSITE_PORT}
     ports:
-      - "1212:1212"
+      - "${WEBSITE_PORT}:${WEBSITE_PORT}"
     networks:
       - inception_network
 

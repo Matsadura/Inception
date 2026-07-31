@@ -1,11 +1,14 @@
 FROM debian:bookworm-slim
 
-RUN apt-get update && apt-get install -y nginx \
+RUN apt-get update && apt-get install -y nginx gettext-base \
 	&& rm -rf /var/lib/apt/lists/*
 
-COPY conf/default.conf /etc/nginx/conf.d/default.conf
+ARG WEBSITE_PORT
+ENV WEBSITE_PORT=${WEBSITE_PORT}
+
+COPY conf/default.conf /etc/nginx/conf.d/default.conf.template
 COPY index.html /var/www/html/index.html
 
-EXPOSE 1212
+EXPOSE ${WEBSITE_PORT}
 
 CMD ["nginx", "-g", "daemon off;"]
